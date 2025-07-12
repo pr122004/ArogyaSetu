@@ -1,0 +1,6 @@
+Flask
+langchain[groq]
+langchain-huggingface
+langchain-astradb
+pypdf
+inference_sdk
