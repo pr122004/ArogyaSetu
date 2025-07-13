@@ -16,6 +16,9 @@ import LabDashboard from './pages/Lab/LabDashboard.jsx';
 import LabReports from './pages/Lab/LabReports.jsx';
 import LabUpload from './pages/Lab/LabUpload.jsx';
 import ReportAIAnalysis from './pages/Patient/ReportAIAnalysis.jsx';
+import PatientReportView from './components/PatientReportView.jsx';
+
+
 
 
 
@@ -52,6 +55,11 @@ function App() {
               <PatientReports />
             </ProtectedRoute>
           } />
+          <Route path="/patient/reports/:reportId" element={
+  <ProtectedRoute allowedRoles={['patient']}>
+    <PatientReportView />
+  </ProtectedRoute>
+} />
           <Route path="/patient/triage" element={
             <ProtectedRoute allowedRoles={['patient']}>
               <PatientTriage />

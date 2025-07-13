@@ -3,6 +3,8 @@ import api from '../../services/api.js';
 import toast from 'react-hot-toast';
 
 // Async Thunks
+
+// Dashboard
 export const fetchPatientDashboard = createAsyncThunk(
   'patient/fetchDashboard',
   async (_, { rejectWithValue }) => {
@@ -15,6 +17,7 @@ export const fetchPatientDashboard = createAsyncThunk(
   }
 );
 
+// Fetch all reports
 export const fetchPatientReports = createAsyncThunk(
   'patient/fetchReports',
   async (_, { rejectWithValue }) => {
@@ -27,6 +30,52 @@ export const fetchPatientReports = createAsyncThunk(
   }
 );
 
+// Get single report
+export const getSingleReport = createAsyncThunk(
+  'patient/getSingleReport',
+  async (reportId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/report/${reportId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch report');
+    }
+  }
+);
+
+// Share report by doctor ID and access level
+export const shareReport = createAsyncThunk(
+  'patient/shareReport',
+  async ({ reportId, doctorId, accessLevel }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/patient/reports/${reportId}/share`, {
+        doctorId,
+        accessLevel,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to share report');
+    }
+  }
+);
+
+// Share report using doctor's license number
+export const shareReportWithDoctor = createAsyncThunk(
+  'patient/shareReportWithDoctor',
+  async ({ reportId, doctorLicense }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/reports/share`, {
+        reportId,
+        doctorLicense,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to share report');
+    }
+  }
+);
+
+// Triage Session
 export const startTriageSession = createAsyncThunk(
   'patient/startTriage',
   async (_, { rejectWithValue }) => {
@@ -47,23 +96,8 @@ export const sendTriageMessage = createAsyncThunk(
       const response = await api.post('/patient/triage/message', { message, sessionId });
       return response.data;
     } catch (error) {
-      toast.error( 'Failed to send message! Server Busy !!');
+      toast.error('Failed to send message! Server Busy !!');
       return rejectWithValue(error.response?.data?.message || 'Failed to send message');
-    }
-  }
-);
-
-export const shareReport = createAsyncThunk(
-  'patient/shareReport',
-  async ({ reportId, doctorId, accessLevel }, { rejectWithValue }) => {
-    try {
-      const response = await api.post(`/patient/reports/${reportId}/share`, {
-        doctorId,
-        accessLevel,
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to share report');
     }
   }
 );
@@ -71,6 +105,7 @@ export const shareReport = createAsyncThunk(
 // Initial State
 const initialState = {
   reports: [],
+  selectedReport: null,
   triageSession: null,
   dashboardData: null,
   loading: false,
@@ -84,6 +119,9 @@ const patientSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    clearSelectedReport: (state) => {
+      state.selectedReport = null;
     },
   },
   extraReducers: (builder) => {
@@ -115,6 +153,48 @@ const patientSlice = createSlice({
       .addCase(fetchPatientReports.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // Get single report
+      .addCase(getSingleReport.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getSingleReport.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedReport = action.payload;
+      })
+      .addCase(getSingleReport.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Share report
+      .addCase(shareReport.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(shareReport.fulfilled, (state) => {
+        state.loading = false;
+        toast.success('Report shared successfully');
+      })
+      .addCase(shareReport.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
+
+      // Share by license
+      .addCase(shareReportWithDoctor.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(shareReportWithDoctor.fulfilled, (state) => {
+        state.loading = false;
+        toast.success('Report shared with doctor successfully');
+      })
+      .addCase(shareReportWithDoctor.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
       })
 
       // Triage Start
@@ -166,23 +246,9 @@ const patientSlice = createSlice({
       .addCase(sendTriageMessage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-
-      // Share Report
-      .addCase(shareReport.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(shareReport.fulfilled, (state) => {
-        state.loading = false;
-        toast.success('Report shared successfully');
-      })
-      .addCase(shareReport.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        toast.error(action.payload);
       });
   },
 });
 
-export const { clearError } = patientSlice.actions;
+export const { clearError, clearSelectedReport } = patientSlice.actions;
 export default patientSlice.reducer;

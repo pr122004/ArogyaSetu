@@ -34,9 +34,10 @@ const LabReports = () => {
       report.patientId.abhaId.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   const handleViewReport = (reportId) => {
-    window.open(`http://localhost:5000/api/report/${reportId}/file`, '_blank');
+    window.open(`${API_BASE_URL}/report/${reportId}/file`, '_blank');
   };
 
   if (loading) {

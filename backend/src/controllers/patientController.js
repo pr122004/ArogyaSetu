@@ -66,6 +66,28 @@ export const getPatientDashboard = async (req, res) => {
     res.status(500).json({ message: 'Error fetching dashboard data', error: error.message });
   }
 };
+// ========================
+// GET: Single Report by ID
+// ========================
+export const getSingleReport = async (req, res) => {
+  try {
+    const report = await Report.findOne({
+      _id: req.params.reportId,
+      patientId: req.user._id
+    })
+      .populate('labId', 'labName')
+      .populate('reviewedBy', 'name');
+
+    if (!report) {
+      return res.status(404).json({ message: 'Report not found' });
+    }
+
+    res.json(report);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching report', error: error.message });
+  }
+};
+
 
 // ========================
 // GET: Patient Reports

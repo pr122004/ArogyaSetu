@@ -19,7 +19,6 @@ export const loginWithPassword = createAsyncThunk(
   }
 );
 
-
 // Register
 export const registerUser = createAsyncThunk(
   'auth/register',
@@ -38,7 +37,6 @@ const initialState = {
   isAuthenticated: false,
   loading: false,
   error: null,
-  // role: null, // Store user role
 };
 
 const authSlice = createSlice({
@@ -47,16 +45,16 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.isAuthenticated = false,
+      state.isAuthenticated = false;
       state.error = null;
       localStorage.removeItem('token');
     },
     clearError: (state) => {
       state.error = null;
     },
-     setLoadingFalse: (state) => {
-    state.loading = false;
-  }
+    setLoadingFalse: (state) => {
+      state.loading = false;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -65,20 +63,17 @@ const authSlice = createSlice({
         state.loading = true;
         state.isAuthenticated = false;
         state.error = null;
-        // state.role = null; // Reset role on new login attempt
       })
       .addCase(loginWithPassword.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
-        // state.role = action.payload.user.role; // Store user role
         toast.success('Login successful!');
       })
       .addCase(loginWithPassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.isAuthenticated = false;
-        // state.role = null; // Reset role on login failure
         toast.error(action.payload);
       })
 

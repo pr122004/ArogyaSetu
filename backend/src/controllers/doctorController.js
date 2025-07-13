@@ -64,6 +64,50 @@ export const addReportFeedback = async (req, res) => {
   }
 };
 
+// Share report with a doctor (from patient's side)
+export const shareReportWithDoctor = async (req, res) => {
+  try {
+    const { reportId, doctorLicense } = req.body;
+
+    if (!reportId || !doctorLicense) {
+      return res.status(400).json({ message: 'Report ID and doctor license are required' });
+    }
+
+    // Find the doctor by license number
+    const doctor = await User.findOne({ licenseNumber: doctorLicense, role: 'doctor' });
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'No doctor found with this license number' });
+    }
+
+    const report = await Report.findOne({
+      _id: reportId,
+      patientId: req.user._id // ensure only patient's own reports
+    });
+
+    if (!report) {
+      return res.status(404).json({ message: 'Report not found' });
+    }
+
+    // Check if already shared
+    const alreadyShared = report.sharedWith.some(
+      (entry) => entry.doctorId.toString() === doctor._id.toString()
+    );
+
+    if (alreadyShared) {
+      return res.status(409).json({ message: 'Already shared with this doctor' });
+    }
+
+    // Share the report
+    report.sharedWith.push({ doctorId: doctor._id, accessLevel: 'view' });
+    await report.save();
+
+    res.json({ message: 'Report shared successfully with doctor' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error sharing report', error: error.message });
+  }
+};
+
 // POST /doctor/patients
 export const addPatientByAbha = async (req, res) => {
   try {

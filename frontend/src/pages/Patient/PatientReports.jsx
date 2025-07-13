@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { 
-  ArrowLeft, 
-  FileText, 
-  Upload, 
-  Eye, 
-  Share2, 
+import {
+  ArrowLeft,
+  FileText,
+  Upload,
+  Eye,
+  Share2,
   Calendar,
   Filter,
   Search,
-  Download
+  Download,
 } from 'lucide-react';
 import { fetchPatientReports } from '../../store/slices/patientSlice.js';
 
 const PatientReports = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { reports, loading } = useSelector((state) => state.patient);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,17 +25,18 @@ const PatientReports = () => {
     dispatch(fetchPatientReports());
   }, [dispatch]);
 
-  const filteredReports = reports.filter(report => {
+  const filteredReports = reports.filter((report) => {
     const matchesFilter = filter === 'all' || report.status === filter;
     const matchesSearch =
       report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.labId?.labName.toLowerCase().includes(searchTerm.toLowerCase());
+      report.labId?.labName?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
   const handleViewReport = (reportId) => {
-    window.open(`http://localhost:5000/api/report/${reportId}/file`, '_blank');
-  };
+  navigate(`/patient/reports/${reportId}`);
+};
+
 
   if (loading) {
     return (
@@ -51,7 +53,7 @@ const PatientReports = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
-              <Link 
+              <Link
                 to="/patient"
                 className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
               >
@@ -107,7 +109,10 @@ const PatientReports = () => {
         {filteredReports.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredReports.map((report) => (
-              <div key={report._id} className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+              <div
+                key={report._id}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+              >
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
@@ -119,12 +124,17 @@ const PatientReports = () => {
                         <p className="text-xs text-gray-500">{report.labId?.labName}</p>
                       </div>
                     </div>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      report.status === 'reviewed' ? 'bg-green-100 text-green-800' :
-                      report.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      report.status === 'delivered' ? 'bg-blue-100 text-blue-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        report.status === 'reviewed'
+                          ? 'bg-green-100 text-green-800'
+                          : report.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : report.status === 'delivered'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {report.status}
                     </span>
                   </div>
@@ -135,7 +145,8 @@ const PatientReports = () => {
                       {new Date(report.createdAt).toLocaleDateString()}
                     </div>
                     <div className="text-sm text-gray-600">
-                      Type: <span className="font-medium">{report.reportType.replace('_', ' ')}</span>
+                      Type:{' '}
+                      <span className="font-medium">{report.reportType.replace('_', ' ')}</span>
                     </div>
                   </div>
 
@@ -144,7 +155,9 @@ const PatientReports = () => {
                       <p className="text-sm font-medium text-green-800 mb-1">Doctor's Feedback:</p>
                       <p className="text-sm text-green-700">{report.doctorFeedback}</p>
                       {report.reviewedBy && (
-                        <p className="text-xs text-green-600 mt-1">- Dr. {report.reviewedBy.name}</p>
+                        <p className="text-xs text-green-600 mt-1">
+                          - Dr. {report.reviewedBy.name}
+                        </p>
                       )}
                     </div>
                   )}
@@ -173,9 +186,9 @@ const PatientReports = () => {
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No reports found</h3>
             <p className="text-gray-500 mb-6">
-              {searchTerm || filter !== 'all' 
-                ? 'No reports match your current filters' 
-                : 'You haven\'t uploaded any reports yet'}
+              {searchTerm || filter !== 'all'
+                ? 'No reports match your current filters'
+                : "You haven't uploaded any reports yet"}
             </p>
             <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2 mx-auto">
               <Upload className="h-5 w-5" />

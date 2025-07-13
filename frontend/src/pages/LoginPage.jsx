@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Heart, Phone, Lock, ArrowLeft, User } from 'lucide-react';
@@ -6,19 +6,21 @@ import { loginWithPassword, clearError } from '../store/slices/authSlice.js';
 
 const LoginPage = () => {
 
- const [formData, setFormData] = useState({
-     abhaId: '',
-     licenseId: '',
-     hospital: '',
-     labId: '',
-   });
+  const [formData, setFormData] = useState({
+    abhaId: '',
+    licenseId: '',
+    hospital: '',
+    labId: '',
+  });
 
   const [password, setPassword] = useState('');
-  const[role, setRole] = useState('patient'); // Default role is patient
+  const [role, setRole] = useState('patient'); // Default role is patient
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+
+  // ⬇️ Add user and isAuthenticated
+  const { loading, error, isAuthenticated, user } = useSelector((state) => state.auth);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -35,40 +37,28 @@ const LoginPage = () => {
       password,
     }
 
-    if(role == 'patient') {
- 
-        userData.abhaId = formData.abhaId;
-    
+    if (role === 'patient') {
+      userData.abhaId = formData.abhaId;
+    } else if (role === 'doctor') {
+      userData.licenseId = formData.licenseId;
+    } else if (role === 'lab') {
+      userData.labId = formData.labId;
     }
-    else if(role == 'doctor') {
-        userData.licenseId = formData.licenseId;
-      }
-      else if(role == 'lab') {
-          userData.labId = formData.labId;
-      } 
-
-    // Basic validation
-    // Basic ABHA ID validation (14 digits)
-// const abhaRegex = /^\d{14}$/;
-// if (!abhaRegex.test(abhaId)) {
-//   alert("Invalid ABHA ID. It must be exactly 14 digits.");
-//   return;
-// }
-
 
     if (password.length < 6) {
       alert("Password must be at least 6 characters.");
       return;
     }
 
-    const result = await dispatch(loginWithPassword(userData));
-  
-
-    if (loginWithPassword.fulfilled.match(result)) {
-      navigate(`/${role}`);
-  }
-
+    await dispatch(loginWithPassword(userData)); // ⬅️ removed navigate from here
   };
+
+  // ⬇️ useEffect to redirect after Redux updates
+  useEffect(() => {
+    if (isAuthenticated && user?.role) {
+      navigate(`/${user.role}`);
+    }
+  }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
     return () => {
@@ -92,105 +82,101 @@ const LoginPage = () => {
           <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
           <p className="text-blue-100">Sign in to your HealthPortal account</p>
         </div>
-         
 
         {/* Login Form */}
         <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-8">
           <form onSubmit={handleLogin} className="space-y-6">
             {/* Role Selection */}
-        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 mb-6">
-          <label className="block text-sm font-medium text-white mb-3">
-            Select Your Role
-          </label>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { value: 'patient', label: 'Patient' },
-              { value: 'doctor', label: 'Doctor' },
-              { value: 'lab', label: 'Lab' }
-            ].map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setRole(option.value)}
-                className={`py-2 px-3 rounded-lg font-medium transition-all ${
-                  role === option.value
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white/10 text-blue-200 hover:bg-white/20'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
+            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 mb-6">
+              <label className="block text-sm font-medium text-white mb-3">
+                Select Your Role
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { value: 'patient', label: 'Patient' },
+                  { value: 'doctor', label: 'Doctor' },
+                  { value: 'lab', label: 'Lab' }
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setRole(option.value)}
+                    className={`py-2 px-3 rounded-lg font-medium transition-all ${
+                      role === option.value
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-white/10 text-blue-200 hover:bg-white/20'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {role === 'patient' && (
-              <>
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                ABHA Id
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  name='abhaId'
-                  value={formData.abhaId}
-                  onChange={handleInputChange}
-                  placeholder="Enter your ABHA Id"
-                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  maxLength={14}
-                  required
-                  autoComplete='username'
-                />
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  ABHA Id
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name='abhaId'
+                    value={formData.abhaId}
+                    onChange={handleInputChange}
+                    placeholder="Enter your ABHA Id"
+                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    maxLength={14}
+                    required
+                    autoComplete='username'
+                  />
+                </div>
               </div>
-            </div>
-            </>
             )}
+
             {role === 'doctor' && (
-              <>
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                License Id
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  name='licenseId'
-                  value={formData.licenseId}
-                  onChange={handleInputChange}
-                  placeholder="Enter your License Id"
-                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  maxLength={14}
-                  required
-                  autoComplete='username'
-                />
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  License Id
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name='licenseId'
+                    value={formData.licenseId}
+                    onChange={handleInputChange}
+                    placeholder="Enter your License Id"
+                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    maxLength={14}
+                    required
+                    autoComplete='username'
+                  />
+                </div>
               </div>
-            </div>
-            </>
             )}
+
             {role === 'lab' && (
-              <>
-            <div>
-              <label className="block text-sm font-medium text-white mb-2">
-                Lab License
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  name='labId'
-                  value={formData.labId}
-                  onChange={handleInputChange}
-                  placeholder="Enter your lab license Id"
-                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  maxLength={14}
-                  required
-                  autoComplete='username'
-                />
+              <div>
+                <label className="block text-sm font-medium text-white mb-2">
+                  Lab License
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name='labId'
+                    value={formData.labId}
+                    onChange={handleInputChange}
+                    placeholder="Enter your lab license Id"
+                    className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    maxLength={14}
+                    required
+                    autoComplete='username'
+                  />
+                </div>
               </div>
-            </div>
-            </>
             )}
 
             <div>

@@ -273,6 +273,16 @@ if (messagesToAppend.length > 0) {
                 </div>
               </div>
             </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+  <h3 className="text-lg font-semibold text-gray-900 mb-4">Need Further Help?</h3>
+  <Link
+    to="/patient/appointments"
+    className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors"
+  >
+    Book Appointment with Doctor
+  </Link>
+</div>
+
           </div>
         </div>
       </div>

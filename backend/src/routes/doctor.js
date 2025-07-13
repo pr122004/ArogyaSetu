@@ -7,6 +7,7 @@ import {
   addPatientByAbha
 } from '../controllers/doctorController.js';
 import { verifyJWT, authorize } from '../middleware/auth.js';
+import { shareReportWithDoctor } from '../controllers/patientController.js';
 
 const router = Router();
 
@@ -23,5 +24,6 @@ router.get('/patients', getPatientsWithSharedReports);
 router.get('/reports', getDoctorReports);
 router.post('/reports/feedback',addReportFeedback);
 router.post('/patients', addPatientByAbha); 
+router.post('/share', verifyJWT, authorize(['patient']), shareReportWithDoctor);
 
 export default router;

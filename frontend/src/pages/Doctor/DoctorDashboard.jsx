@@ -12,6 +12,7 @@ import {
 import { logout } from '../../store/slices/authSlice';
 import { fetchDoctorDashboard, fetchDoctorPatients } from '../../store/slices/doctorSlice';
 import { useNavigate } from 'react-router-dom';
+import Chatbot from '../../components/Chatbot.jsx';
 
 const DoctorDashboard = () => {
   const dispatch = useDispatch();
@@ -43,6 +44,7 @@ const DoctorDashboard = () => {
   const recentReports = reports?.slice(0, 5) || [];
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -142,6 +144,8 @@ const DoctorDashboard = () => {
         </div>
       </div>
     </div>
+    <Chatbot />
+    </>
   );
 };
 

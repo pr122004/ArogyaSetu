@@ -4,7 +4,8 @@ import {
   getPatientReports,
   startTriageSession,
   sendTriageMessage,
-  shareReportWithDoctor
+  shareReportWithDoctor,
+  getSingleReport
 } from '../controllers/patientController.js';
 
 import {  authorize, verifyJWT } from '../middleware/auth.js';
@@ -18,5 +19,7 @@ router.get('/reports', protectPatient, getPatientReports);
 router.post('/triage/start', protectPatient, startTriageSession);
 router.post('/triage/message', protectPatient, sendTriageMessage);
 router.post('/reports/:reportId/share', protectPatient, shareReportWithDoctor);
+router.get('/reports/:reportId', protectPatient, getSingleReport);
+
 
 export default router;

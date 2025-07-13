@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { logout } from '../../store/slices/authSlice.js';
 import { fetchPatientDashboard } from '../../store/slices/patientSlice.js';
+import Chatbot from '../../components/Chatbot.jsx';
 
 const PatientDashboard = () => {
   const dispatch = useDispatch();
@@ -31,9 +32,12 @@ const PatientDashboard = () => {
 
   if (loading) {
     return (
+    
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
+      
+      
     );
   }
 
@@ -42,6 +46,7 @@ const PatientDashboard = () => {
   const reviewedReports = reports?.filter(r => r.status === 'reviewed').length || 0;
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
@@ -76,6 +81,18 @@ const PatientDashboard = () => {
           <h2 className="text-2xl font-bold mb-2">Welcome back, {user?.name}!</h2>
           <p className="text-blue-100">Manage your health reports and get AI-powered insights</p>
         </div>
+        {/* Smart Band Data */}
+        <div className="bg-white rounded-xl shadow-sm border mb-12 border-gray-200 mt-8">
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Smart Band Data</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <HealthMetric label="Heart Rate" value="76 bpm" icon={<Heart className="h-5 w-5 text-red-500" />} />
+              <HealthMetric label="Blood Pressure" value="120/80 mmHg" icon={<Shield className="h-5 w-5 text-blue-500" />} />
+              <HealthMetric label="Steps Today" value="5,342" icon={<TrendingUp className="h-5 w-5 text-green-600" />} />
+              <HealthMetric label="Sleep Duration" value="6.8 hrs" icon={<Calendar className="h-5 w-5 text-purple-600" />} />
+            </div>
+          </div>
+        </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -94,16 +111,6 @@ const PatientDashboard = () => {
             bgColor="bg-green-50"
             iconColor="text-green-600"
           />
-
-          {/* <QuickActionCard
-            icon={<Shield className="h-6 w-6" />}
-            title="Emergency Vault"
-            description="Manage emergency contacts"
-            link="/patient/emergency"
-            bgColor="bg-red-50"
-            iconColor="text-red-600"
-          /> */}
-
           <QuickActionCard
             icon={<TrendingUp className="h-6 w-6" />}
             title="AI Report Analysis"
@@ -171,7 +178,7 @@ const PatientDashboard = () => {
         </div>
 
         {/* Health Insights */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Health Insights</h3>
@@ -202,8 +209,12 @@ const PatientDashboard = () => {
             </div>
           </div>
         </div>
+
+        
       </div>
     </div>
+    <Chatbot />
+    </>
   );
 };
 
@@ -230,6 +241,16 @@ const StatCard = ({ label, value, Icon, color }) => (
         <p className="text-2xl font-bold text-gray-900">{value}</p>
       </div>
       <Icon className={`h-8 w-8 ${color}`} />
+    </div>
+  </div>
+);
+
+const HealthMetric = ({ label, value, icon }) => (
+  <div className="flex items-center space-x-3 bg-gray-50 p-4 rounded-lg">
+    {icon}
+    <div>
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-lg font-medium text-gray-900">{value}</p>
     </div>
   </div>
 );
