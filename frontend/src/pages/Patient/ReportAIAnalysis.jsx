@@ -11,6 +11,8 @@ const ReportAIAnalysis = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const BASE_URL = import.meta.env.VITE_AI_BACKEND_API_URL;
+
 
   useEffect(() => {
     dispatch(fetchPatientReports());
@@ -28,7 +30,7 @@ const ReportAIAnalysis = () => {
     formData.append('file', image);
 
     try {
-      const endpoint = `http://192.168.1.5:5002/predict/${scanType}`;
+      const endpoint = `${BASE_URL}/predict/${scanType}`;
       const res = await fetch(endpoint, {
         method: 'POST',
         body: formData,

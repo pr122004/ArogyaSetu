@@ -9,7 +9,7 @@ const Chatbot = () => {
   ]);
   const [input, setInput] = useState('');
   const chatRef = useRef(null);
-
+  const API_URL = import.meta.env.VITE_AI_BACKEND_API_URL;
   const toggleChat = () => setIsOpen(!isOpen);
 
   const sendMessage = async () => {
@@ -20,9 +20,10 @@ const Chatbot = () => {
     setInput('');
 
     try {
-      const res = await axios.post('http://127.0.0.1:5002/chat', {
-        message: input,
-      });
+      const res = await axios.post(`${API_URL}/chat`, {
+  message: input,
+});
+
       const botReply = { sender: 'bot', text: res.data.reply };
       setMessages(prev => [...prev, botReply]);
     } catch (error) {
