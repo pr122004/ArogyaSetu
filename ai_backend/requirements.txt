@@ -5,3 +5,4 @@ langchain-astradb
 pypdf
 google-generativeai
 flask_cors
+inference-sdk
