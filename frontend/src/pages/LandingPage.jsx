@@ -20,7 +20,7 @@ const LandingPage = () => {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-2">
               <Heart className="h-8 w-8 text-red-500" />
-              <span className="text-2xl font-bold text-white">HealthSaarthi</span>
+              <span className="text-2xl font-bold text-white">ArogyaSetu</span>
             </div>
             <Link
               to="/login"
@@ -36,7 +36,7 @@ const LandingPage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Your Health, <span className="text-blue-400">Simplified</span>
+            Guiding Bharat Towards a <span className="text-blue-400">Healthier</span> Tomorrow.
           </h1>
           <p className="text-xl text-blue-100 mb-12 max-w-3xl mx-auto">
             Secure healthcare management for patients, doctors, and labs. 
@@ -75,7 +75,7 @@ const LandingPage = () => {
       {/* Features Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-white mb-4">Why Choose HealthSaarthi?</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Why Choose ArogyaSetu?</h2>
           <p className="text-blue-100 text-lg">Advanced features for modern healthcare management</p>
         </div>
 
