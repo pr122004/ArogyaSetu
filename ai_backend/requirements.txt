@@ -4,3 +4,4 @@ langchain-huggingface
 langchain-astradb
 pypdf
 google-generativeai
+flask_cors
