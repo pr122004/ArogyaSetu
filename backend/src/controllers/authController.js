@@ -124,10 +124,13 @@ const login = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
   const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
+ const isProd = process.env.NODE_ENV === "production";
+
+const options = {
+  httpOnly: true,
+  secure: isProd, // required for cross-origin cookies over HTTPS
+  sameSite: isProd ? "None" : "Lax", // "None" is required for cross-origin cookies
+};
 
   return res
     .status(200)
@@ -163,10 +166,13 @@ const logout = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-  const options = {
-    httpOnly: true,
-    secure: true
-  };
+  const isProd = process.env.NODE_ENV === "production";
+
+const options = {
+  httpOnly: true,
+  secure: isProd, // required for cross-origin cookies over HTTPS
+  sameSite: isProd ? "None" : "Lax", // "None" is required for cross-origin cookies
+};
 
   return res
     .status(200)
@@ -195,10 +201,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
 
-    const options = {
-      httpOnly: true,
-      secure: true
-    };
+    const isProd = process.env.NODE_ENV === "production";
+
+const options = {
+  httpOnly: true,
+  secure: isProd, // required for cross-origin cookies over HTTPS
+  sameSite: isProd ? "None" : "Lax", 
+};
 
     return res
       .status(200)
