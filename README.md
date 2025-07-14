@@ -1,7 +1,7 @@
 # 🩺 Arogya Setu – AI-Powered Healthcare System
 
-Project Live Link: [https://arogya-setu-kappa.vercel.app/]
-PPT link: https://www.canva.com/design/DAGs-_6rVno/OW4vEkiOqM8ajrAAVUXKnw/edit?utm_content=DAGs-_6rVno&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+- Project Live Link: [https://arogya-setu-kappa.vercel.app/]
+- PPT link: [https://www.canva.com/design/DAGs-_6rVno/OW4vEkiOqM8ajrAAVUXKnw/edit?utm_content=DAGs-_6rVno&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton](Click Here)
 
 Imagine a world where healthcare is truly **personal, intelligent, and accessible**.  
 **Arogya Setu** brings this vision to life — a revolutionary AI-powered healthcare platform designed to transform how patients, doctors, and laboratories connect and collaborate.
